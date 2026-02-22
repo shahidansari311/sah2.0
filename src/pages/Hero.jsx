@@ -6,7 +6,7 @@ const WORDS = ['Intelligence', 'Precision', 'Fairness', 'Accuracy', 'Speed'];
 
 const MARQUEE_ITEMS = ['LayoutLMv3', 'SBERT', 'TOPSIS', 'FastAPI', 'Celery', 'Redis', 'pdfplumber', 'PyTorch', 'NLP', 'WebSockets', 'PostgreSQL', 'Transformers', 'Vector Embeddings', 'Async I/O'];
 
-export default function Hero({ onAnalyzeClick, onAuthClick }) {
+export default function Hero({ onAnalyzeClick, onAuthClick, onWatchDemo }) {
   const [wordIdx, setWordIdx] = useState(0);
   const { scrollY } = useScroll();
   const y1 = useTransform(scrollY, [0, 600], [0, -100]);
@@ -68,7 +68,7 @@ export default function Hero({ onAnalyzeClick, onAuthClick }) {
             <button className="btn btn-primary btn-xl hero__cta-main" onClick={onAnalyzeClick}>
               <span>⚡</span> Analyze Resumes Free
             </button>
-            <button className="btn btn-secondary btn-lg" onClick={() => document.getElementById('pipeline')?.scrollIntoView({ behavior: 'smooth' })}>
+            <button className="btn btn-secondary btn-lg" onClick={() => (onWatchDemo ? onWatchDemo() : document.getElementById('pipeline')?.scrollIntoView({ behavior: 'smooth' }))}>
               Watch Demo →
             </button>
           </motion.div>

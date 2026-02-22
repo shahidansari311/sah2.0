@@ -4,18 +4,18 @@
 ═══════════════════════════════════════════════════════ */
 
 :root {
-  --bg: #02040e;
-  --bg2: #060916;
-  --bg3: #0a1022;
+  --bg: #0c1220;
+  --bg2: #111827;
+  --bg3: #161f33;
 
-  --glass: rgba(6, 12, 32, 0.65);
-  --glass2: rgba(10, 18, 44, 0.5);
-  --glass3: rgba(14, 24, 56, 0.35);
-  --glass-light: rgba(255,255,255,0.03);
+  --glass: rgba(17, 28, 50, 0.72);
+  --glass2: rgba(22, 35, 60, 0.55);
+  --glass3: rgba(30, 45, 75, 0.4);
+  --glass-light: rgba(255,255,255,0.04);
 
-  --border: rgba(99, 155, 255, 0.12);
-  --border2: rgba(99, 155, 255, 0.22);
-  --border3: rgba(99, 155, 255, 0.4);
+  --border: rgba(96, 165, 250, 0.1);
+  --border2: rgba(96, 165, 250, 0.18);
+  --border3: rgba(96, 165, 250, 0.35);
 
   --blue: #3b82f6;
   --blue2: #60a5fa;
@@ -29,15 +29,15 @@
   --amber: #f59e0b;
   --rose: #f43f5e;
 
-  --text: #f0f6ff;
-  --text2: #7fa3d0;
-  --text3: #3a5a80;
+  --text: #f1f5f9;
+  --text2: #94a3b8;
+  --text3: #64748b;
 
-  --shadow: 0 8px 40px rgba(0,0,0,0.5);
-  --shadow2: 0 20px 80px rgba(0,0,0,0.4);
-  --glow: 0 0 60px rgba(59,130,246,0.15);
-  --glow2: 0 0 120px rgba(59,130,246,0.25);
-  --glow-cyan: 0 0 60px rgba(34,211,238,0.12);
+  --shadow: 0 8px 40px rgba(0,0,0,0.4);
+  --shadow2: 0 20px 80px rgba(0,0,0,0.35);
+  --glow: 0 0 60px rgba(59,130,246,0.12);
+  --glow2: 0 0 120px rgba(59,130,246,0.18);
+  --glow-cyan: 0 0 60px rgba(34,211,238,0.1);
 
   --r: 14px;
   --r2: 20px;
@@ -226,8 +226,29 @@ body::before {
 /* ─── CANVAS ─── */
 #particle-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 
+/* ─── PAGE LAYOUT (multi-page) ─── */
+.page-layout {
+  padding-top: 88px;
+  min-height: calc(100vh - 88px);
+  padding-bottom: 24px;
+}
+.page-content {
+  padding: 32px 0 48px;
+}
+.page-layout--upload .upload-section,
+.page-layout--analysis .page-section,
+.page-layout--ranking .page-section,
+.page-layout--pipeline .page-section,
+.page-layout--pricing .page-section,
+.page-layout--faq .page-section,
+.page-layout--about .about-section {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
 @media (max-width: 768px) {
   .container, .container-sm { padding: 0 20px; }
   .section-title { font-size: clamp(28px, 8vw, 42px); }
   .btn-xl { padding: 14px 32px; font-size: 16px; }
+  .page-layout { padding-top: 72px; }
 }

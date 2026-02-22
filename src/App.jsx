@@ -1,22 +1,24 @@
 import { useState, useEffect } from 'react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ParticleCanvas from './components/ParticleCanvas';
 import Navbar from './components/Navbar';
 import AuthModal from './components/AuthModal';
 import Footer from './components/Footer';
+import PageLayout from './components/PageLayout';
 import Hero from './pages/Hero';
 import Features from './pages/Features';
+import About from './pages/About';
 import { Upload } from './pages/Upload';
 import Analysis from './pages/Analysis';
 import { Ranking, Pipeline, Pricing, FAQ } from './pages/OtherPages';
-// import 'index.css';
 
 function LoadingScreen({ done }) {
   return (
     <AnimatePresence>
       {!done && (
-        <motion.div key="loader" style={{ position:'fixed',inset:0,zIndex:9999,background:'#02040e',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:28 }}
+        <motion.div key="loader" style={{ position:'fixed',inset:0,zIndex:9999,background:'var(--bg)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:28 }}
           exit={{ opacity:0,scale:1.04 }} transition={{ duration:0.6,ease:[0.4,0,0.2,1] }}>
           <motion.div initial={{ opacity:0,scale:0.8 }} animate={{ opacity:1,scale:1 }} transition={{ duration:0.6 }} style={{ textAlign:'center' }}>
             <motion.div animate={{ rotate:[0,360] }} transition={{ duration:8,repeat:Infinity,ease:'linear' }} style={{ display:'inline-block',marginBottom:20,filter:'drop-shadow(0 0 24px rgba(59,130,246,0.6))' }}>
@@ -50,10 +52,90 @@ function LoadingScreen({ done }) {
   );
 }
 
+function HomePage({ onAuthClick }) {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const onAnalyzeClick = () => navigate('/upload');
+  const onWatchDemo = () => navigate('/pipeline');
+  return (
+    <>
+      <Hero onAnalyzeClick={onAnalyzeClick} onAuthClick={onAuthClick} onWatchDemo={onWatchDemo} />
+      <Features />
+    </>
+  );
+}
+
+function UploadPage({ onAuthClick }) {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const onComplete = () => navigate('/analysis');
+  return (
+    <PageLayout className="page-layout--upload">
+      <div className="page-content">
+        <Upload onComplete={onComplete} onAuthClick={onAuthClick} user={user} />
+      </div>
+    </PageLayout>
+  );
+}
+
+function AnalysisPage() {
+  return (
+    <PageLayout className="page-layout--analysis">
+      <div className="page-content">
+        <Analysis />
+      </div>
+    </PageLayout>
+  );
+}
+
+function RankingPage() {
+  return (
+    <PageLayout className="page-layout--ranking">
+      <div className="page-content">
+        <Ranking />
+      </div>
+    </PageLayout>
+  );
+}
+
+function PipelinePage() {
+  return (
+    <PageLayout className="page-layout--pipeline">
+      <div className="page-content">
+        <Pipeline />
+      </div>
+    </PageLayout>
+  );
+}
+
+function PricingPage({ onAuthClick }) {
+  return (
+    <PageLayout className="page-layout--pricing">
+      <div className="page-content">
+        <Pricing onAuthClick={onAuthClick} />
+      </div>
+    </PageLayout>
+  );
+}
+
+function FAQPage() {
+  return (
+    <PageLayout className="page-layout--faq">
+      <div className="page-content">
+        <FAQ />
+      </div>
+    </PageLayout>
+  );
+}
+
+function AboutPage() {
+  return <About />;
+}
+
 function AppInner() {
   const [darkMode, setDarkMode] = useState(true);
   const [loading, setLoading] = useState(true);
-  const [authMode, setAuthMode] = useState(null); // null | 'login' | 'signup'
+  const [authMode, setAuthMode] = useState(null);
   const { user } = useAuth();
 
   useEffect(() => { const t = setTimeout(() => setLoading(false), 2400); return () => clearTimeout(t); }, []);
@@ -62,7 +144,6 @@ function AppInner() {
     document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
   }, [darkMode]);
 
-  // Cursor glow
   useEffect(() => {
     const glow = document.getElementById('cursor-glow');
     if (!glow) return;
@@ -72,8 +153,6 @@ function AppInner() {
   }, []);
 
   const onAuthClick = (mode) => setAuthMode(mode);
-  const onAnalyzeClick = () => document.getElementById('upload')?.scrollIntoView({ behavior: 'smooth' });
-  const onAnalysisComplete = () => setTimeout(() => document.getElementById('analysis')?.scrollIntoView({ behavior: 'smooth' }), 500);
 
   return (
     <div style={{ minHeight: '100vh' }}>
@@ -86,16 +165,16 @@ function AppInner() {
 
           <Navbar darkMode={darkMode} toggleDark={() => setDarkMode(d => !d)} onAuthClick={onAuthClick} />
 
-          <main>
-            <Hero onAnalyzeClick={onAnalyzeClick} onAuthClick={onAuthClick} />
-            <Features />
-            <Upload onComplete={onAnalysisComplete} onAuthClick={onAuthClick} user={user} />
-            <Analysis />
-            <Ranking />
-            <Pipeline />
-            <Pricing onAuthClick={onAuthClick} />
-            <FAQ />
-          </main>
+          <Routes>
+            <Route path="/" element={<HomePage onAuthClick={onAuthClick} />} />
+            <Route path="/upload" element={<UploadPage onAuthClick={onAuthClick} />} />
+            <Route path="/analysis" element={<AnalysisPage />} />
+            <Route path="/ranking" element={<RankingPage />} />
+            <Route path="/pipeline" element={<PipelinePage />} />
+            <Route path="/pricing" element={<PricingPage onAuthClick={onAuthClick} />} />
+            <Route path="/faq" element={<FAQPage />} />
+            <Route path="/about" element={<AboutPage />} />
+          </Routes>
 
           <Footer onAuthClick={onAuthClick} />
 

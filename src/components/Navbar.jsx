@@ -1,24 +1,30 @@
 import { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
 const LINKS = [
-  { label: 'Home', id: 'hero' },
-  { label: 'Features', id: 'features' },
-  { label: 'Analyze', id: 'upload' },
-  { label: 'Rankings', id: 'ranking' },
-  { label: 'Pipeline', id: 'pipeline' },
-  { label: 'Pricing', id: 'pricing' },
-  { label: 'FAQ', id: 'faq' },
+  { label: 'Home', path: '/' },
+  { label: 'Features', path: '/' },
+  { label: 'Rankings', path: '/ranking' },
+  { label: 'Pipeline', path: '/pipeline' },
+  { label: 'Pricing', path: '/pricing' },
+  { label: 'About', path: '/about' },
+  { label: 'FAQ', path: '/faq' },
 ];
 
 export default function Navbar({ darkMode, toggleDark, onAuthClick }) {
   const { user, logout } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [active, setActive] = useState('hero');
+
+  const isActive = (path) => location.pathname === path;
+  const isActiveWithDot = (path, label) =>
+    location.pathname === path && (path !== '/' || label === 'Home');
 
   useEffect(() => {
     const onScroll = () => { setScrolled(window.scrollY > 50); };
@@ -26,9 +32,9 @@ export default function Navbar({ darkMode, toggleDark, onAuthClick }) {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const go = (id) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-    setMobileOpen(false); setActive(id);
+  const go = (path) => {
+    navigate(path);
+    setMobileOpen(false);
   };
 
   return (
@@ -37,7 +43,7 @@ export default function Navbar({ darkMode, toggleDark, onAuthClick }) {
         initial={{ y: -100 }} animate={{ y: 0 }} transition={{ duration: 0.7, ease: [0.4,0,0.2,1] }}>
         <div className="nav__inner">
           {/* Logo */}
-          <div className="nav__logo" onClick={() => go('hero')}>
+          <Link to="/" className="nav__logo" onClick={() => setMobileOpen(false)}>
             <div className="nav__logo-mark">
               <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
                 <path d="M15 2L27 8V22L15 28L3 22V8L15 2Z" stroke="url(#nGrad)" strokeWidth="1.5" fill="none"/>
@@ -47,20 +53,34 @@ export default function Navbar({ darkMode, toggleDark, onAuthClick }) {
             </div>
             <span className="nav__logo-text">Rank<span className="grad">Sense</span></span>
             <span className="nav__logo-badge">AI</span>
-          </div>
+          </Link>
 
           {/* Links */}
           <div className="nav__links">
             {LINKS.map(l => (
-              <button key={l.id} className={`nav__link ${active === l.id ? 'nav__link--active' : ''}`} onClick={() => go(l.id)}>
+              <Link
+                key={l.path + l.label}
+                to={l.path}
+                className={`nav__link ${isActiveWithDot(l.path, l.label) ? 'nav__link--active' : ''}`}
+                onClick={(e) => {
+                  setMobileOpen(false);
+                  if (l.label === 'Features' && location.pathname === '/') {
+                    e.preventDefault();
+                    document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
+              >
                 {l.label}
-                {active === l.id && <motion.div className="nav__link-dot" layoutId="navDot" />}
-              </button>
+                {isActiveWithDot(l.path, l.label) && <motion.div className="nav__link-dot" layoutId="navDot" />}
+              </Link>
             ))}
           </div>
 
-          {/* Right */}
+          {/* Upload CTA + Right */}
           <div className="nav__right">
+            <Link to="/upload" className="nav__upload-cta btn btn-primary btn-sm">
+              Upload Resumes
+            </Link>
             <button className="nav__theme" onClick={toggleDark} title="Toggle theme">
               <AnimatePresence mode="wait">
                 <motion.span key={darkMode?'d':'l'} initial={{scale:0,rotate:-90}} animate={{scale:1,rotate:0}} exit={{scale:0,rotate:90}} transition={{duration:0.2}}>
@@ -87,9 +107,9 @@ export default function Navbar({ darkMode, toggleDark, onAuthClick }) {
                         </div>
                       </div>
                       <div className="divider" style={{margin:'10px 0'}}/>
-                      <button className="nav__user-menu-item" onClick={() => go('upload')}>⚡ New Analysis</button>
-                      <button className="nav__user-menu-item" onClick={() => go('ranking')}>📊 My Rankings</button>
-                      <button className="nav__user-menu-item" onClick={() => go('pricing')}>💎 Upgrade Plan</button>
+                      <button className="nav__user-menu-item" onClick={() => { go('/upload'); setUserMenuOpen(false); }}>⚡ New Analysis</button>
+                      <button className="nav__user-menu-item" onClick={() => { go('/ranking'); setUserMenuOpen(false); }}>📊 My Rankings</button>
+                      <button className="nav__user-menu-item" onClick={() => { go('/pricing'); setUserMenuOpen(false); }}>💎 Upgrade Plan</button>
                       <div className="divider" style={{margin:'10px 0'}}/>
                       <button className="nav__user-menu-item nav__user-menu-item--danger" onClick={() => { logout(); setUserMenuOpen(false); }}>🚪 Sign Out</button>
                     </motion.div>
@@ -115,11 +135,20 @@ export default function Navbar({ darkMode, toggleDark, onAuthClick }) {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div className="nav__mobile glass" initial={{opacity:0,y:-20}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-20}}>
+            <Link to="/upload" className="nav__mobile-link nav__mobile-link--cta" onClick={() => setMobileOpen(false)}>
+              Upload Resumes →
+            </Link>
             {LINKS.map((l,i) => (
-              <motion.button key={l.id} className="nav__mobile-link" onClick={() => go(l.id)}
-                initial={{opacity:0,x:-16}} animate={{opacity:1,x:0}} transition={{delay:i*0.05}}>
-                {l.label}
-              </motion.button>
+              <Link
+                key={l.path + l.label}
+                to={l.path}
+                className={`nav__mobile-link ${isActiveWithDot(l.path, l.label) ? 'nav__mobile-link--active' : ''}`}
+                onClick={() => setMobileOpen(false)}
+              >
+                <motion.span initial={{opacity:0,x:-16}} animate={{opacity:1,x:0}} transition={{delay:i*0.05}}>
+                  {l.label}
+                </motion.span>
+              </Link>
             ))}
             <div className="divider" style={{margin:'8px 0'}}/>
             {user ? (

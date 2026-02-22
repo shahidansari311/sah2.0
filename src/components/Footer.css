@@ -1,7 +1,7 @@
 .footer { position:relative; z-index:1; border-top:1px solid var(--border); padding:80px 0 40px; background:var(--glass); backdrop-filter:blur(28px); overflow:hidden; }
 .footer__top { display:grid; grid-template-columns:1fr 1fr; gap:80px; margin-bottom:8px; }
 .footer__brand { display:flex; flex-direction:column; gap:20px; }
-.footer__logo { display:flex; align-items:center; gap:10px; filter:drop-shadow(0 0 10px rgba(59,130,246,0.4)); }
+.footer__logo { display:flex; align-items:center; gap:10px; filter:drop-shadow(0 0 10px rgba(59,130,246,0.4)); text-decoration:none; color:inherit; }
 .footer__logo-text { font-family:'Syne',sans-serif; font-size:24px; font-weight:800; letter-spacing:-0.02em; color:var(--text); }
 .footer__tagline { font-size:14px; color:var(--text2); line-height:1.75; font-weight:300; max-width:380px; }
 .footer__cta-row { display:flex; gap:12px; }
@@ -11,16 +11,8 @@
 .footer__link-title { font-family:'Syne',sans-serif; font-weight:700; font-size:13px; color:var(--text); margin-bottom:4px; letter-spacing:0.5px; }
 .footer__link { color:var(--text2); font-size:13px; text-decoration:none; transition:color 0.2s; display:block; }
 .footer__link:hover { color:var(--blue2); }
-.footer__team-title { font-family:'Syne',sans-serif; font-weight:700; font-size:18px; margin-bottom:24px; }
-.footer__team-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
-.footer__member { padding:24px 18px; border-radius:18px; display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center; transition:all 0.25s; cursor:default; }
-.footer__member-av { width:52px; height:52px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:800; font-size:18px; color:#fff; }
-.footer__member-name { font-family:'Syne',sans-serif; font-weight:700; font-size:14px; color:var(--text); }
-.footer__member-role { font-size:11px; color:var(--text2); line-height:1.4; }
-.footer__member-email { font-size:11px; color:var(--text3); text-decoration:none; transition:color 0.2s; }
-.footer__member-email:hover { color:var(--blue2); }
 .footer__bottom { display:flex; justify-content:space-between; align-items:center; gap:20px; flex-wrap:wrap; font-size:13px; color:var(--text3); }
 .footer__bottom-links { display:flex; gap:20px; }
 .footer__glow { position:absolute; bottom:-100px; left:50%; transform:translateX(-50%); width:600px; height:200px; background:radial-gradient(ellipse, rgba(59,130,246,0.06) 0%, transparent 70%); pointer-events:none; }
-@media (max-width:900px) { .footer__top { grid-template-columns:1fr; gap:48px; } .footer__links-col { grid-template-columns:1fr 1fr; } .footer__team-grid { grid-template-columns:1fr 1fr; } }
-@media (max-width:500px) { .footer__team-grid { grid-template-columns:1fr; } .footer__links-col { grid-template-columns:1fr; } }
+@media (max-width:900px) { .footer__top { grid-template-columns:1fr; gap:48px; } .footer__links-col { grid-template-columns:1fr 1fr; } }
+@media (max-width:500px) { .footer__links-col { grid-template-columns:1fr; } }
