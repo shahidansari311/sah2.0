@@ -1,0 +1,60 @@
+.auth-overlay {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(2, 4, 14, 0.75);
+  backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.auth-modal {
+  width: 100%; max-width: 460px; border-radius: 28px;
+  padding: 36px; position: relative; overflow: hidden;
+  border: 1px solid var(--border2);
+}
+.auth-modal__glow {
+  position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
+  width: 300px; height: 200px;
+  background: radial-gradient(ellipse, rgba(59,130,246,0.2) 0%, transparent 70%);
+  pointer-events: none;
+}
+.auth-modal__close {
+  position: absolute; top: 18px; right: 18px;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--glass2); border: 1px solid var(--border);
+  color: var(--text2); cursor: pointer; font-size: 12px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.auth-modal__close:hover { background: rgba(244,63,94,0.12); color: var(--rose); border-color: var(--rose); }
+.auth-modal__logo { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; justify-content: center; filter: drop-shadow(0 0 12px rgba(59,130,246,0.4)); }
+.auth-modal__brand { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--text); }
+.auth-modal__tabs { display: flex; gap: 4px; background: var(--glass2); border: 1px solid var(--border); border-radius: 14px; padding: 4px; margin-bottom: 24px; }
+.auth-tab {
+  flex: 1; padding: 9px; border-radius: 10px; border: none; cursor: pointer;
+  font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600;
+  color: var(--text2); background: none; transition: all 0.25s;
+}
+.auth-tab--active { background: linear-gradient(135deg, var(--blue), var(--cyan)); color: #fff; box-shadow: 0 2px 16px rgba(59,130,246,0.35); }
+.auth-modal__title { text-align: center; margin-bottom: 24px; }
+.auth-modal__title { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; color: var(--text); display: flex; flex-direction: column; gap: 4px; }
+.auth-modal__title span { font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 400; color: var(--text2); }
+.auth-form { display: flex; flex-direction: column; gap: 16px; }
+.auth-social { display: flex; gap: 10px; }
+.auth-social-btn {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px; border-radius: 12px; border: 1px solid var(--border2);
+  color: var(--text); font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s; background: var(--glass2);
+}
+.auth-social-btn:hover { border-color: var(--border3); transform: translateY(-1px); }
+.auth-divider { display: flex; align-items: center; gap: 12px; }
+.auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.auth-divider span { font-size: 12px; color: var(--text3); white-space: nowrap; }
+.auth-error { background: rgba(244,63,94,0.08); border: 1px solid rgba(244,63,94,0.25); border-radius: 10px; padding: 10px 14px; font-size: 13px; color: var(--rose); }
+.auth-pass-toggle { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 15px; opacity: 0.6; transition: opacity 0.2s; }
+.auth-pass-toggle:hover { opacity: 1; }
+.auth-submit { width: 100%; justify-content: center; font-size: 15px; padding: 14px; }
+.auth-submit.loading { opacity: 0.8; cursor: not-allowed; }
+.auth-spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; }
+.auth-link { background: none; border: none; color: var(--blue2); cursor: pointer; font-family: 'Outfit', sans-serif; font-size: inherit; text-decoration: underline; text-underline-offset: 2px; transition: color 0.2s; }
+.auth-link:hover { color: var(--cyan); }
+.auth-terms { font-size: 12px; color: var(--text3); text-align: center; line-height: 1.6; }

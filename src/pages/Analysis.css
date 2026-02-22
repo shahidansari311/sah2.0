@@ -1,0 +1,41 @@
+.analysis-section { padding: 120px 0; position: relative; z-index: 1; }
+.analysis-tabs { display: flex; gap: 10px; flex-wrap: wrap; margin: 48px 0 32px; }
+.atab { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 50px; background: var(--glass2); border: 1px solid var(--border); cursor: pointer; transition: all 0.25s; font-family: 'Outfit', sans-serif; }
+.atab--active { box-shadow: 0 0 20px rgba(59,130,246,0.15); }
+.atab__av { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 11px; color: #fff; flex-shrink: 0; }
+.atab__name { font-size: 13px; font-weight: 600; color: var(--text); display: block; }
+.atab__rank { font-size: 11px; display: block; }
+.atab__info { display: flex; flex-direction: column; }
+.analysis-panel { display: grid; grid-template-columns: 340px 1fr; gap: 24px; align-items: start; }
+.ap-left { padding: 28px; border-radius: 22px; display: flex; flex-direction: column; gap: 22px; position: sticky; top: 88px; }
+.ap-cand { display: flex; align-items: flex-start; gap: 14px; }
+.ap-av { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; color: #fff; flex-shrink: 0; }
+.ap-name { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; }
+.ap-role { font-size: 13px; color: var(--text2); margin-top: 2px; }
+.ap-rank { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-left: auto; background: var(--glass2); border: 1px solid var(--border); border-radius: 10px; padding: 5px 12px; }
+.ap-ring-row { display: flex; align-items: center; gap: 20px; background: rgba(59,130,246,0.04); border: 1px solid rgba(59,130,246,0.1); border-radius: 16px; padding: 18px; }
+.ap-grade { font-family: 'Syne', sans-serif; font-size: 54px; font-weight: 800; line-height: 1; }
+.ap-topsis-label { font-size: 11px; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; margin-top: 6px; }
+.ap-topsis-val { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px; }
+.ap-sub-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+.ap-insights { display: flex; flex-direction: column; gap: 10px; }
+.ap-insight { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--text2); line-height: 1.55; }
+.ap-idot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.ap-idot--success { background: var(--emerald); box-shadow: 0 0 8px rgba(16,185,129,0.5); }
+.ap-idot--warning { background: var(--amber); box-shadow: 0 0 8px rgba(245,158,11,0.5); }
+.ap-idot--error { background: var(--rose); box-shadow: 0 0 8px rgba(244,63,94,0.5); }
+.ap-kws { display: flex; flex-direction: column; gap: 10px; }
+.ap-right { display: flex; flex-direction: column; gap: 20px; }
+.ap-radar { padding: 24px; border-radius: 20px; }
+.scards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.scard { padding: 18px; border-radius: 16px; display: flex; flex-direction: column; gap: 10px; border-left: 3px solid var(--sc, var(--blue)); transition: all 0.25s; }
+.scard__head { display: flex; justify-content: space-between; align-items: center; }
+.scard__name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; }
+.scard__score { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 24px; line-height: 1; }
+.scard__score sub { font-size: 12px; opacity: 0.5; vertical-align: super; font-weight: 400; }
+.scard__bar { height: 5px !important; }
+.scard__foot { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.scard__fb { font-size: 12px; color: var(--text2); line-height: 1.5; flex: 1; }
+.scard__wt { font-size: 10px; color: var(--text3); letter-spacing: 0.5px; }
+@media (max-width: 1100px) { .analysis-panel { grid-template-columns: 1fr; } .ap-left { position: static; } }
+@media (max-width: 600px) { .scards-grid { grid-template-columns: 1fr; } .analysis-tabs { gap: 6px; } }
