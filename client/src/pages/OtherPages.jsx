@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import CountUp from 'react-countup';
-import { CANDIDATES, PIPELINE_STAGES, METRICS, PLANS, FAQS } from '../data/mockData';
+import { PIPELINE_STAGES, METRICS, PLANS, FAQS } from '../data/mockData';
 import './OtherPages.css';
 
 // ─── RANKING ─────────────────────────────────────────────────────────────

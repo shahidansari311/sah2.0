@@ -12,7 +12,8 @@ import Features from './pages/Features';
 import About from './pages/About';
 import { Upload } from './pages/Upload';
 import Analysis from './pages/Analysis';
-import { Ranking, Pipeline, Pricing, FAQ } from './pages/OtherPages';
+import Ranking from './pages/Ranking';
+import { Pipeline, Pricing, FAQ } from './pages/OtherPages';
 
 function LoadingScreen({ done }) {
   return (
@@ -68,7 +69,10 @@ function HomePage({ onAuthClick }) {
 function UploadPage({ onAuthClick }) {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const onComplete = () => navigate('/analysis');
+  const onComplete = (result) => {
+    // result already stored in sessionStorage by Upload component
+    navigate('/analysis');
+  };
   return (
     <PageLayout className="page-layout--upload">
       <div className="page-content">

@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer } from 'recharts';
-import { CANDIDATES } from '../data/mockData';
+import { apiGetLatestBatch } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import './Analysis.css';
 
 function Ring({ score, size = 180 }) {
@@ -52,11 +53,59 @@ function SCard({ name, data, i }) {
   );
 }
 
+function EmptyState({ user }) {
+  return (
+    <div style={{ textAlign: 'center', padding: '80px 20px', color: 'var(--text3)' }}>
+      <div style={{ fontSize: 64, marginBottom: 20 }}>📊</div>
+      <h3 style={{ fontSize: 22, color: 'var(--text)', marginBottom: 10 }}>No Analysis Yet</h3>
+      <p style={{ maxWidth: 420, margin: '0 auto', lineHeight: 1.6 }}>
+        {user
+          ? 'Upload resumes from the Upload page to see your section-by-section analysis here.'
+          : 'Sign in and upload resumes to unlock deep scoring analysis.'}
+      </p>
+    </div>
+  );
+}
+
 export default function Analysis() {
-  const [activeId, setActiveId] = useState(1);
+  const { user } = useAuth();
+  const [candidates, setCandidates] = useState([]);
+  const [activeId, setActiveId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState('');
   const { ref, inView } = useInView({ threshold: 0.05, triggerOnce: true });
-  const c = CANDIDATES.find(x => x.id === activeId);
-  const radarData = Object.entries(c.sections).map(([k, v]) => ({ section: k.split(' ')[0], score: v.score }));
+
+  // Try sessionStorage first (fresh upload), then API for latest batch
+  useEffect(() => {
+    const stored = sessionStorage.getItem('rs_batch');
+    if (stored) {
+      try {
+        const data = JSON.parse(stored);
+        if (data.candidates?.length) {
+          setCandidates(data.candidates);
+          setActiveId(data.candidates[0].id);
+          return;
+        }
+      } catch (_) {}
+    }
+
+    if (!user) return;
+    setLoading(true);
+    apiGetLatestBatch()
+      .then(data => {
+        if (data.candidates?.length) {
+          setCandidates(data.candidates);
+          setActiveId(data.candidates[0].id);
+        }
+      })
+      .catch(err => {
+        if (!err.message?.includes('404')) setFetchError(err.message);
+      })
+      .finally(() => setLoading(false));
+  }, [user]);
+
+  const c = candidates.find(x => x.id === activeId);
+  const radarData = c ? Object.entries(c.sections).map(([k, v]) => ({ section: k.split(' ')[0], score: v.score })) : [];
 
   return (
     <section id="analysis" className="analysis-section" ref={ref}>
@@ -67,90 +116,113 @@ export default function Analysis() {
           <p className="section-sub">Every section independently scored, weighted, and analyzed. Select a candidate to explore their full breakdown.</p>
         </motion.div>
 
-        {/* Tabs */}
-        <motion.div className="analysis-tabs" initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ delay: 0.2 }}>
-          {CANDIDATES.map(cd => (
-            <button key={cd.id} className={`atab ${activeId === cd.id ? 'atab--active' : ''}`} onClick={() => setActiveId(cd.id)}
-              style={activeId === cd.id ? { '--tc': cd.color, borderColor: cd.color, background: `${cd.color}12` } : {}}>
-              <div className="atab__av" style={{ background: `linear-gradient(135deg,${cd.color},${cd.color}88)` }}>{cd.avatar}</div>
-              <div className="atab__info">
-                <span className="atab__name">{cd.name.split(' ')[0]}</span>
-                <span className="atab__rank" style={{ color: cd.color }}>#{cd.rank} · {cd.total}</span>
-              </div>
-            </button>
-          ))}
-        </motion.div>
+        {loading && (
+          <div style={{ textAlign: 'center', padding: 60, color: 'var(--text3)' }}>
+            <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              style={{ width: 40, height: 40, border: '3px solid rgba(59,130,246,0.2)', borderTopColor: '#3b82f6', borderRadius: '50%', margin: '0 auto 16px' }} />
+            Loading analysis...
+          </div>
+        )}
 
-        <AnimatePresence mode="wait">
-          <motion.div key={activeId} className="analysis-panel"
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} transition={{ duration: 0.35 }}>
-            {/* Left */}
-            <div className="ap-left glass">
-              <div className="ap-cand">
-                <div className="ap-av" style={{ background: `linear-gradient(135deg,${c.color},${c.color}88)`, boxShadow: `0 0 20px ${c.color}40` }}>{c.avatar}</div>
-                <div className="ap-info">
-                  <h3 className="ap-name">{c.name}</h3>
-                  <div className="ap-role">{c.role}</div>
-                  <div style={{ display:'flex',gap:6,marginTop:6 }}>
-                    <span className="tag tag-blue">{c.experience}</span>
-                    <span className="tag tag-cyan">{c.education}</span>
+        {!loading && candidates.length === 0 && <EmptyState user={user} />}
+
+        {!loading && candidates.length > 0 && (
+          <>
+            {/* Tabs */}
+            <motion.div className="analysis-tabs" initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ delay: 0.2 }}>
+              {candidates.map(cd => (
+                <button key={cd.id} className={`atab ${activeId === cd.id ? 'atab--active' : ''}`} onClick={() => setActiveId(cd.id)}
+                  style={activeId === cd.id ? { '--tc': cd.color, borderColor: cd.color, background: `${cd.color}12` } : {}}>
+                  <div className="atab__av" style={{ background: `linear-gradient(135deg,${cd.color},${cd.color}88)` }}>{cd.avatar}</div>
+                  <div className="atab__info">
+                    <span className="atab__name">{cd.name.split(' ')[0]}</span>
+                    <span className="atab__rank" style={{ color: cd.color }}>#{cd.rank} · {cd.total}</span>
                   </div>
-                </div>
-                <div className="ap-rank" style={{ color: c.color }}>#{c.rank}</div>
-              </div>
+                </button>
+              ))}
+            </motion.div>
 
-              <div className="ap-ring-row">
-                <Ring score={c.total} size={160} />
-                <div>
-                  <div className="ap-grade" style={{ color: c.gradeColor, textShadow: `0 0 30px ${c.gradeColor}50` }}>{c.grade}</div>
-                  <div className="ap-topsis-label">TOPSIS</div>
-                  <div className="ap-topsis-val" style={{ color: c.gradeColor }}>{Math.round(c.topsis * 100)}%</div>
-                </div>
-              </div>
+            {c && (
+              <AnimatePresence mode="wait">
+                <motion.div key={activeId} className="analysis-panel"
+                  initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} transition={{ duration: 0.35 }}>
+                  {/* Left */}
+                  <div className="ap-left glass">
+                    <div className="ap-cand">
+                      <div className="ap-av" style={{ background: `linear-gradient(135deg,${c.color},${c.color}88)`, boxShadow: `0 0 20px ${c.color}40` }}>{c.avatar}</div>
+                      <div className="ap-info">
+                        <h3 className="ap-name">{c.name}</h3>
+                        <div className="ap-role">{c.role}</div>
+                        <div style={{ display:'flex',gap:6,marginTop:6 }}>
+                          <span className="tag tag-blue">{c.experience}</span>
+                          <span className="tag tag-cyan">{c.education}</span>
+                        </div>
+                      </div>
+                      <div className="ap-rank" style={{ color: c.color }}>#{c.rank}</div>
+                    </div>
 
-              <div className="divider" />
+                    <div className="ap-ring-row">
+                      <Ring score={c.total} size={160} />
+                      <div>
+                        <div className="ap-grade" style={{ color: c.gradeColor, textShadow: `0 0 30px ${c.gradeColor}50` }}>{c.grade}</div>
+                        <div className="ap-topsis-label">TOPSIS</div>
+                        <div className="ap-topsis-val" style={{ color: c.gradeColor }}>{Math.round(c.topsis * 100)}%</div>
+                      </div>
+                    </div>
 
-              <div className="ap-insights">
-                <div className="ap-sub-title">AI Insights</div>
-                {c.insights.map((ins, i) => (
-                  <motion.div key={i} className={`ap-insight ap-insight--${ins.type}`}
-                    initial={{ opacity: 0, x: -14 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 + 0.3 }}>
-                    <div className={`ap-idot ap-idot--${ins.type}`} />{ins.text}
-                  </motion.div>
-                ))}
-              </div>
+                    <div className="divider" />
 
-              <div className="divider" />
+                    <div className="ap-insights">
+                      <div className="ap-sub-title">AI Insights</div>
+                      {(c.insights || []).map((ins, i) => (
+                        <motion.div key={i} className={`ap-insight ap-insight--${ins.type}`}
+                          initial={{ opacity: 0, x: -14 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 + 0.3 }}>
+                          <div className={`ap-idot ap-idot--${ins.type}`} />{ins.text}
+                        </motion.div>
+                      ))}
+                    </div>
 
-              <div className="ap-kws">
-                <div className="ap-sub-title">Matched Keywords</div>
-                <div style={{ display:'flex',flexWrap:'wrap',gap:6 }}>
-                  {c.keywords.map(k => <span key={k} className="tag tag-blue">{k}</span>)}
-                </div>
-              </div>
-            </div>
+                    <div className="divider" />
 
-            {/* Right */}
-            <div className="ap-right">
-              <div className="ap-radar glass">
-                <div className="ap-sub-title" style={{ marginBottom: 16 }}>Score Radar</div>
-                <ResponsiveContainer width="100%" height={240}>
-                  <RadarChart data={radarData}>
-                    <PolarGrid stroke="rgba(59,130,246,0.1)" />
-                    <PolarAngleAxis dataKey="section" tick={{ fill:'var(--text2)', fontSize:11, fontFamily:'Outfit' }} />
-                    <Radar name="Score" dataKey="score" stroke={c.color} fill={`${c.color}18`} strokeWidth={2}
-                      dot={{ fill: c.color, r: 3, filter: `drop-shadow(0 0 4px ${c.color})` }} />
-                  </RadarChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="scards-grid">
-                {Object.entries(c.sections).map(([name, data], i) => (
-                  <SCard key={name} name={name} data={data} i={i} />
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        </AnimatePresence>
+                    <div className="ap-kws">
+                      <div className="ap-sub-title">Matched Keywords</div>
+                      <div style={{ display:'flex',flexWrap:'wrap',gap:6 }}>
+                        {(c.keywords || []).map(k => <span key={k} className="tag tag-blue">{k}</span>)}
+                        {(!c.keywords || c.keywords.length === 0) && <span style={{ color: 'var(--text3)', fontSize: 13 }}>No keywords detected</span>}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right */}
+                  <div className="ap-right">
+                    <div className="ap-radar glass">
+                      <div className="ap-sub-title" style={{ marginBottom: 16 }}>Score Radar</div>
+                      <ResponsiveContainer width="100%" height={240}>
+                        <RadarChart data={radarData}>
+                          <PolarGrid stroke="rgba(59,130,246,0.1)" />
+                          <PolarAngleAxis dataKey="section" tick={{ fill:'var(--text2)', fontSize:11, fontFamily:'Outfit' }} />
+                          <Radar name="Score" dataKey="score" stroke={c.color} fill={`${c.color}18`} strokeWidth={2}
+                            dot={{ fill: c.color, r: 3, filter: `drop-shadow(0 0 4px ${c.color})` }} />
+                        </RadarChart>
+                      </ResponsiveContainer>
+                    </div>
+                    <div className="scards-grid">
+                      {Object.entries(c.sections || {}).map(([name, data], i) => (
+                        <SCard key={name} name={name} data={data} i={i} />
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            )}
+          </>
+        )}
+
+        {fetchError && (
+          <div style={{ textAlign: 'center', padding: 20, color: '#f43f5e', fontSize: 14 }}>
+            ⚠️ {fetchError}
+          </div>
+        )}
       </div>
     </section>
   );
